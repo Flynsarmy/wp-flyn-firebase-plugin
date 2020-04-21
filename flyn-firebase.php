@@ -4,7 +4,7 @@ Plugin Name: Firebase Short Links
 Plugin URI: https://www.flynsarmy.com/
 Description: A simple Firebase URL shortener for WordPress.
 Author: Flyn San
-Version: 1.0.0
+Version: 2.0.0
 Author URI: https://www.flynsarmy.com/
 */
 
