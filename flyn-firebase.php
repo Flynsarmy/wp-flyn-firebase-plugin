@@ -4,7 +4,7 @@ Plugin Name: Firebase Short Links
 Plugin URI: https://www.flynsarmy.com/
 Description: A simple Firebase URL shortener for WordPress.
 Author: Flyn San
-Version: 2.0.0
+Version: 2.1.0
 Author URI: https://www.flynsarmy.com/
 */
 
@@ -32,7 +32,7 @@ add_filter('get_shortlink', function ($url, $post_id = false) {
         // Goo.gl plugin support
         $shortlink = get_post_meta($post_id, '_googl_shortlink', true);
         if ($shortlink) {
-            add_post_meta($post_id, '_ffirebase_shortlink', $shortlink, true);
+            update_post_meta($post_id, '_ffirebase_shortlink', $shortlink);
             return $shortlink;
         }
 
@@ -40,7 +40,7 @@ add_filter('get_shortlink', function ($url, $post_id = false) {
         $shortlink = ffirebase_shorten($permalink);
 
         if (!is_wp_error($shortlink)) {
-            add_post_meta($post_id, '_ffirebase_shortlink', $shortlink, true);
+            update_post_meta($post_id, '_ffirebase_shortlink', $shortlink);
             return $shortlink;
         } else {
             return $url;
