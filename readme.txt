@@ -1,10 +1,9 @@
 === Firebase URL Shortener ===
-Contributors: kovshenin
 Donate link: https://www.flynsarmy.com/
-Tags: links, twitter, short, url, socialmedia, permalinks, redirect, trim, identi.ca, microblogging, shorturl, canonical, analytics
+Tags: links, short, url, socialmedia, permalinks, redirect, microblogging, shorturl
 Requires at least: 3.0
-Tested up to: 4.9.4
-Stable tag: 1.0.0
+Tested up to: 5.4
+Stable tag: 2.1.0
 
 Uses Google's URL shortener (Firebase) to create short links for your WordPress posts.
 
@@ -27,6 +26,12 @@ Google has launched a URL Shortener API (Firebase) - one of the fastest and most
 2. Posts List Column
 
 == Change log ==
+
+= 2.1 (2020-10-01) =
+* Don't create duplicate meta records for posts with existing goo.gl shortlinks
+
+= 2.0 (2020-04-21) =
+* Added dashboard shortener widget
 
 = 1.0 =
 * First version
