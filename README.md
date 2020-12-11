@@ -1,11 +1,11 @@
-=== Firebase URL Shortener ===
-Donate link: https://www.flynsarmy.com/
-Tags: links, short, url, socialmedia, permalinks, redirect, microblogging, shorturl
-Requires at least: 3.0
-Tested up to: 5.4
-Stable tag: 2.1.0
+=== Firebase URL Shortener ===  
+Donate link: https://www.flynsarmy.com/  
+Tags: links, short, url, socialmedia, permalinks, redirect, microblogging, shorturl  
+Requires at least: 3.0.0  
+Tested up to: 5.6.0  
+Stable tag: 2.1.1  
 
-Uses Google's URL shortener (Firebase) to create short links for your WordPress posts.
+Uses Google's URL shortener (Firebase) to create short links for your WordPress posts.  
 
 == Description ==
 
@@ -27,11 +27,14 @@ Google has launched a URL Shortener API (Firebase) - one of the fastest and most
 
 == Change log ==
 
-= 2.1 (2020-10-01) =
+= 2.1.1 (2020-12-11) =
+* Delete shortlink post meta only when the slug changes.
+
+= 2.1.0 (2020-10-01) =
 * Don't create duplicate meta records for posts with existing goo.gl shortlinks
 
-= 2.0 (2020-04-21) =
+= 2.0.0 (2020-04-21) =
 * Added dashboard shortener widget
 
-= 1.0 =
+= 1.0.0 =
 * First version
