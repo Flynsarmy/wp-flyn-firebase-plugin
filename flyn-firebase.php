@@ -1,23 +1,36 @@
 <?php
-/*
-Plugin Name: Firebase Short Links
-Plugin URI: https://www.flynsarmy.com/
-Description: A simple Firebase URL shortener for WordPress.
-Author: Flyn San
-Version: 2.1.0
-Author URI: https://www.flynsarmy.com/
-*/
 
-add_filter('get_shortlink', function ($url, $post_id = false) {
+/**
+ * @package Firebase Short Links
+ * @version 2.1.1
+ *
+ * Plugin Name: Firebase Short Links
+ * Description: A simple Firebase URL shortener for WordPress.
+ * Version: 2.1.1
+ * Author: Flynsarmy
+ * Author URI: https://www.flynsarmy.com/
+ */
+
+ /**
+  * Get Shortlink.
+  *
+  * @param string $shortlink
+  * @param int $id
+  * @param string $context
+  * @param bool $allow_slugs
+  * @return string
+  */
+add_filter('get_shortlink', function (string $shortlink, int $id, string $context, bool $allow_slugs): string {
+    global $post;
+
     if (!defined('FLYN_FIREBASE_URL') || !defined('FLYN_FIREBASE_API_KEY')) {
         return $url;
     }
 
-    global $post;
-    if (! $post_id && $post) {
-        $post_id = $post->ID;
-    } elseif ($post_id) {
-        $post = get_post($post_id);
+    if (! $id && $post) {
+        $id = $post->ID;
+    } elseif ($id) {
+        $post = get_post($id);
     }
 
     if ($post && !in_array($post->post_status, ['publish', 'private'])) {
@@ -25,22 +38,22 @@ add_filter('get_shortlink', function ($url, $post_id = false) {
     }
 
     if ((is_singular() || $post) && ! is_front_page()) {
-        $shortlink = ffirebase_cached_shortlink($post_id);
+        $shortlink = ffirebase_cached_shortlink($id);
         if ($shortlink) {
             return $shortlink;
         }
         // Goo.gl plugin support
-        $shortlink = get_post_meta($post_id, '_googl_shortlink', true);
+        $shortlink = get_post_meta($id, '_googl_shortlink', true);
         if ($shortlink) {
-            update_post_meta($post_id, '_ffirebase_shortlink', $shortlink);
+            update_post_meta($id, '_ffirebase_shortlink', $shortlink);
             return $shortlink;
         }
 
-        $permalink = get_permalink($post_id);
+        $permalink = get_permalink($id);
         $shortlink = ffirebase_shorten($permalink);
 
         if (!is_wp_error($shortlink)) {
-            update_post_meta($post_id, '_ffirebase_shortlink', $shortlink);
+            update_post_meta($id, '_ffirebase_shortlink', $shortlink);
             return $shortlink;
         } else {
             return $url;
@@ -65,15 +78,26 @@ add_filter('get_shortlink', function ($url, $post_id = false) {
             return home_url('/');
         }
     }
-}, 9, 2);
+}, 9, 4);
 
-add_action('wp_dashboard_setup', function () {
+/**
+ * Add Dashboard Widget.
+ *
+ * @return void
+ */
+add_action('wp_dashboard_setup', function (): void {
     wp_add_dashboard_widget('ffirebase_shortener', 'Shorten Link', function () {
-        require __DIR__.'/views/dashboard_shortener.php';
+        require __DIR__ . '/views/dashboard_shortener.php';
     });
 });
 
-function ffirebase_cached_shortlink($post_id)
+/**
+ * Get Cached Shortlink.
+ *
+ * @param int $post_id
+ * @return string
+ */
+function ffirebase_cached_shortlink(int $post_id)
 {
     return (string)get_post_meta($post_id, '_ffirebase_shortlink', true);
 }
@@ -86,18 +110,28 @@ function ffirebase_cached_shortlink($post_id)
  */
 function ffirebase_shorten(string $url)
 {
-    $result = wp_remote_post(add_query_arg('key', apply_filters('ffirebase_api_key', FLYN_FIREBASE_API_KEY), 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks'), [
-        'body' => json_encode([
-            //'dynamicLinkInfo' => [
-            //    'link' => $url,
-            //],
-            'longDynamicLink' => FLYN_FIREBASE_URL."/?link=".esc_url($url),
-            'suffix' => [
-                'option' => 'SHORT',
-            ]
-        ]),
-        'headers' => array( 'Content-Type' => 'application/json' ),
-    ]);
+    $result = wp_remote_post(
+        add_query_arg(
+            'key',
+            apply_filters(
+                'ffirebase_api_key',
+                FLYN_FIREBASE_API_KEY
+            ),
+            'https://firebasedynamiclinks.googleapis.com/v1/shortLinks'
+        ),
+        [
+            'body' => json_encode([
+                //'dynamicLinkInfo' => [
+                //    'link' => $url,
+                //],
+                'longDynamicLink' => FLYN_FIREBASE_URL . "/?link=" . esc_url($url),
+                'suffix' => [
+                    'option' => 'SHORT',
+                ]
+            ]),
+            'headers' => [ 'Content-Type' => 'application/json' ],
+        ]
+    );
 
     // Return an error if we got one
     if (is_wp_error($result)) {
@@ -114,13 +148,27 @@ function ffirebase_shorten(string $url)
     return $shortlink;
 }
 
-add_filter('manage_edit-post_columns', function ($columns) {
+/**
+ * Add Shortlink Column.
+ *
+ * @return array $columns
+ * @return array
+ */
+add_filter('manage_edit-post_columns', function (array $columns): array {
     $columns['shortlink'] = 'Shortlink';
+
     return $columns;
 });
 
-add_action('manage_posts_custom_column', function ($column) {
-    if ('shortlink' == $column) {
+/**
+ * Add Shortlink Column Content.
+ *
+ * @param string $column
+ * @param int $post_id
+ * @return void
+ */
+add_action('manage_posts_custom_column', function (string $column, int $post_id): void {
+    if ('shortlink' === $column) {
         // Don't try to load shortlinks for non-public posts
         $post_status = get_post_status(get_the_ID());
         if (!in_array($post_status, ['publish', 'private'])) {
@@ -132,16 +180,26 @@ add_action('manage_posts_custom_column', function ($column) {
             $shorturl_caption = preg_replace('/https?\:\/\//', '', $shorturl);
             printf('<a href="%s">%s</a>', esc_url($shorturl), esc_html($shorturl_caption));
         } else {
-            echo "<span class='ffirebase_load_shortlink' data-post_id='".get_the_ID()."'>Generating...</span>";
+            echo "<span class='ffirebase_load_shortlink' data-post_id='" . get_the_ID() . "'>Generating...</span>";
         }
     }
+}, 10, 2);
+
+/**
+ * Enqueue Admin Scripts
+ *
+ * @return void
+ */
+add_action('admin_print_footer_scripts-edit.php', function (): void {
+    require __DIR__ . '/views/post_list_footer.php';
 });
 
-add_action('admin_print_footer_scripts-edit.php', function () {
-    require __DIR__.'/views/post_list_footer.php';
-});
-
-add_action('wp_ajax_ffirebase_generate_shortlink', function () {
+/**
+ * AJAX Generate Shortlink
+ *
+ * @return void
+ */
+add_action('wp_ajax_ffirebase_generate_shortlink', function (): void {
     header('Content-Type: application/json');
 
     $url = @$_POST['url'];
@@ -168,7 +226,12 @@ add_action('wp_ajax_ffirebase_generate_shortlink', function () {
     ]));
 });
 
-add_action('wp_ajax_ffirebase_generate_shortlinks', function () {
+/**
+ * AJAX Generate Shortlinks
+ *
+ * @return void
+ */
+add_action('wp_ajax_ffirebase_generate_shortlinks', function (): void {
     header('Content-Type: application/json');
 
     $ids = @$_GET['ids'];
@@ -195,20 +258,59 @@ add_action('wp_ajax_ffirebase_generate_shortlinks', function () {
     ]));
 });
 
-add_action('save_post', function ($post_ID, $post) {
+/**
+ * Delete post meta on save.
+ *
+ * @param int $post_ID
+ * @param WP_Post $post
+ * @param bool $update
+ * @return mixed
+ */
+// add_action('save_post', function (int $post_ID, WP_Post $post, bool $update) {
+//     // Don't act on auto drafts and revisions.
+//     if ('auto-draft' === $post->post_status || 'revision' === $post->post_type) {
+//         return;
+//     }
+
+//     delete_post_meta($post_ID, '_ffirebase_shortlink');
+// }, 10, 3);
+
+/**
+ * Delete post meta on save if slug has changed.
+ *
+ * @param int $post_ID
+ * @param WP_Post $post_after
+ * @param WP_Post $post_before
+ * @return void
+ */
+add_action('post_updated', function (int $post_ID, WP_Post $post_after, WP_Post $post_before): void {
     // Don't act on auto drafts and revisions.
-    if ('auto-draft' == $post->post_status || 'revision' == $post->post_type) {
+    if ('auto-draft' === $post_after->post_status || 'revision' === $post_after->post_type) {
+        return;
+    }
+
+    // Don't delete the shortlink if the slug was empty prior, or the slug has not changed.
+    if (!$post_before->post_name || $post_after->post_name === $post_before->post_name) {
         return;
     }
 
     delete_post_meta($post_ID, '_ffirebase_shortlink');
-}, 10, 2);
+}, 10, 3);
 
 if (!defined('FLYN_FIREBASE_URL') || !defined('FLYN_FIREBASE_API_KEY')) {
-    add_action('admin_notices', function () {
+    /**
+     * Admin Notice
+     *
+     * @return void
+     */
+    add_action('admin_notices', function (): void {
         ?>
         <div class="notice notice-error is-dismissable">
-            <p>Firebase Short Links plugin is enabled but <em>FLYN_FIREBASE_URL</em> or <em>FLYN_FIREBASE_API_KEY </em> constants aren't defined in <em>wp-config.php</em>. Please see the installation instructions section for this plugin.</p>
+            <p>
+                Firebase Short Links plugin is enabled but <em>FLYN_FIREBASE_URL</em> or
+                <em>FLYN_FIREBASE_API_KEY</em> constants aren't defined in <em>wp-config.php</em>.
+                Please see the installation instructions section for this plugin.
+            </p>
         </div>
         <?php
     });

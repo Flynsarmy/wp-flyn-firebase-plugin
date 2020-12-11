@@ -1,0 +1,16 @@
+{
+    "name": "flynsarmy/wp-flyn-firebase-plugin",
+    "description": "A simple Firebase URL shortener for WordPress.",
+    "type": "wordpress-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Flynsarmy",
+            "email": "flynsarmy@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.5"
+    }
+}
