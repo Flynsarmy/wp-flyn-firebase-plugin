@@ -1,11 +1,11 @@
-=== Firebase URL Shortener ===
-Donate link: https://www.flynsarmy.com/
-Tags: links, short, url, socialmedia, permalinks, redirect, microblogging, shorturl
-Requires at least: 3.0.0
-Tested up to: 5.6.0
-Stable tag: 2.1.1
+=== Firebase URL Shortener ===  
+Donate link: https://www.flynsarmy.com/  
+Tags: links, short, url, socialmedia, permalinks, redirect, microblogging, shorturl  
+Requires at least: 3.0.0  
+Tested up to: 5.6.0  
+Stable tag: 2.1.1  
 
-Uses Google's URL shortener (Firebase) to create short links for your WordPress posts.
+Uses Google's URL shortener (Firebase) to create short links for your WordPress posts.  
 
 == Description ==
 
