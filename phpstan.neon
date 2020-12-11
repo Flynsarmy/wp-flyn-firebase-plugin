@@ -6,3 +6,5 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     paths:
         - flyn-firebase.php
+    bootstrapFiles:
+        - phpstan.constants.php
