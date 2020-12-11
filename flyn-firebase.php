@@ -14,17 +14,17 @@
  /**
   * Get Shortlink.
   *
-  * @param string $shortlink
+  * @param string|WP_Error $shortlink
   * @param int $id
   * @param string $context
   * @param bool $allow_slugs
   * @return string
   */
-add_filter('get_shortlink', function (string $shortlink, int $id, string $context, bool $allow_slugs): string {
+add_filter('get_shortlink', function (string $shortlink, int $id, string $context, bool $allow_slugs) {
     global $post;
 
     if (!defined('FLYN_FIREBASE_URL') || !defined('FLYN_FIREBASE_API_KEY')) {
-        return $url;
+        return $shortlink;
     }
 
     if (! $id && $post) {
@@ -56,7 +56,7 @@ add_filter('get_shortlink', function (string $shortlink, int $id, string $contex
             update_post_meta($id, '_ffirebase_shortlink', $shortlink);
             return $shortlink;
         } else {
-            return $url;
+            return $shortlink;
         }
     } elseif (is_front_page()) {
         $shortlink = (string) get_option('_ffirebase_shortlink_home');
