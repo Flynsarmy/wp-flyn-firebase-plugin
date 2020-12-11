@@ -1,4 +1,4 @@
-=== Firebase URL Shortener ===  
+=== Firebase Short Links ===  
 Donate link: https://www.flynsarmy.com/  
 Tags: links, short, url, socialmedia, permalinks, redirect, microblogging, shorturl  
 Requires at least: 3.0.0  
