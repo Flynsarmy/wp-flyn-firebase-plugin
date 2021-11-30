@@ -58,7 +58,7 @@ function ffbShorten( form ) {
         },
     } );
 
-	return false;
+    return false;
 }
 
 </script>

@@ -5,6 +5,14 @@
     <rule ref="PSR12"/>
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
 
+    <rule ref="Generic.Files.LineLength.TooLong">
+        <exclude-pattern>views/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Internal.NoCodeFound">
+        <exclude-pattern>views/*</exclude-pattern>
+    </rule>
+
     <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
         <exclude-pattern>flyn-firebase.php</exclude-pattern>
     </rule>
@@ -12,4 +20,5 @@
     <file>flyn-firebase.php</file>
 
     <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*\.(?!php$)</exclude-pattern>
 </ruleset>
